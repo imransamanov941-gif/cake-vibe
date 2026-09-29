@@ -1,5 +1,64 @@
 <!doctype html>
 <html lang="ru">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cake Vibe</title></head>
-<body><h1>Cake Vibe работает</h1><p>Скоро тут будет калькулятор торта.</p></body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atelier Torte — калькулятор</title>
+<style>
+body{font-family:system-ui,Arial;margin:0;background:#faf6f1;display:flex;justify-content:center;padding:20px}
+.card{background:#fff;max-width:480px;width:100%;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+h2{margin:0 0 4px}p.sub{color:#888;margin:0 0 16px;font-size:14px}
+label{display:block;font-size:14px;margin:14px 0 6px;font-weight:600}
+select,input[type=date]{width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;font-size:15px}
+input[type=range]{width:100%}
+.price{font-size:24px;font-weight:800;margin:18px 0;background:#fdf3e7;padding:12px;border-radius:12px;text-align:center}
+button{width:100%;padding:14px;border:0;border-radius:12px;background:#7a4a2b;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.row{display:flex;align-items:center;gap:8px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Калькулятор торта</h2>
+<p class="sub">Atelier Torte — посчитай за 30 секунд</p>
+<label>Тип торта</label>
+<select id="type">
+<option value="2200">Классика — 2200 ₽/кг</option>
+<option value="2800">Свадебный — 2800 ₽/кг</option>
+<option value="1700fix">Бенто — 1700 ₽ фикс</option>
+</select>
+<label>Вес: <span id="wval">2</span> кг</label>
+<input type="range" id="weight" min="1" max="5" step="0.5" value="2">
+<label>Начинка</label>
+<select id="filling">
+<option>Ваниль</option>
+<option>Шоколад</option>
+<option>Малина</option>
+</select>
+<div class="row"><input type="checkbox" id="decor"><label for="decor" style="margin:0">Декор +500 ₽</label></div>
+<label>Дата</label>
+<input type="date" id="date">
+<div class="price" id="price">—</div>
+<button onclick="order()">Отправить заявку в Telegram</button>
+</div>
+<script>
+const TG_NICK = "Imran_Shamanov"; // <-- замени на свой ник без @
+const typeEl=document.getElementById('type'), w=document.getElementById('weight'),
+wval=document.getElementById('wval'), priceEl=document.getElementById('price');
+function calc(){
+  wval.textContent=w.value;
+  let sum=0;
+  if(typeEl.value==="1700fix") sum=1700;
+  else sum=parseFloat(w.value)*parseInt(typeEl.value);
+  if(document.getElementById('decor').checked) sum+=500;
+  priceEl.textContent=sum.toLocaleString('ru-RU')+" ₽";
+  return sum;
+}
+[typeEl,w,document.getElementById('decor')].forEach(e=>e.oninput=calc); calc();
+function order(){
+  const sum=calc();
+  const text=`Здравствуйте! Хочу торт: ${typeEl.selectedOptions[0].text}, вес ${w.value} кг, начинка ${document.getElementById('filling').value}, декор ${document.getElementById('decor').checked?'да':'нет'}, дата ${document.getElementById('date').value}, цена ~${sum} ₽`;
+  window.open(`https://t.me/${TG_NICK}?text=`+encodeURIComponent(text),'_blank');
+}
+</script>
+</body>
 </html>
